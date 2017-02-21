@@ -23,7 +23,7 @@ install:
       }
 build_script:
   - sbt ++2.12.1 coreJVM/publishLocal cache/publishLocal sbt-launcher/publishLocal
-  - scripts/generate-sbt-launcher.sh
+  - ./scripts/generate-sbt-launcher.sh
   - rm -rf project
   - ./csbt ++2.11.8 clean compile coreJVM/publishLocal http-server/publishLocal
   - ./csbt ++2.10.6 clean compile
