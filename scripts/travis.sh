@@ -27,8 +27,13 @@ function isMasterOrDevelop() {
   [ "$TRAVIS_BRANCH" = "master" -o "$TRAVIS_BRANCH" = "develop" ]
 }
 
+~/sbt ++2.12.1 coreJVM/publishLocal cache/publishLocal sbt-launcher/publishLocal
+
+scripts/generate-sbt-launcher.sh
+rm -rf project
+
 # Required for ~/.ivy2/local repo tests
-~/sbt ++2.11.8 coreJVM/publishLocal http-server/publishLocal
+./csbt ++2.11.8 coreJVM/publishLocal http-server/publishLocal
 
 # Required for HTTP authentication tests
 ./coursier launch \
@@ -75,12 +80,12 @@ fi
 
 SBT_COMMANDS="$SBT_COMMANDS tut coreJVM/mimaReportBinaryIssues cache/mimaReportBinaryIssues"
 
-~/sbt ++${TRAVIS_SCALA_VERSION} $SBT_COMMANDS
+./csbt ++${TRAVIS_SCALA_VERSION} $SBT_COMMANDS
 
 scripts/java-6-test.sh
 
 if isNotPr && publish && isMaster; then
-  ~/sbt ++${TRAVIS_SCALA_VERSION} publish
+  ./csbt ++${TRAVIS_SCALA_VERSION} publish
 fi
 
 PUSH_GHPAGES=0
