@@ -142,7 +142,8 @@ lazy val tests = crossProject
     },
     libraryDependencies += "com.lihaoyi" %%% "utest" % "0.4.5" % "test",
     unmanagedResourceDirectories in Test += (baseDirectory in LocalRootProject).value / "tests" / "shared" / "src" / "test" / "resources",
-    testFrameworks += new TestFramework("utest.runner.Framework")
+    testFrameworks += new TestFramework("utest.runner.Framework"),
+    parallelExecution in Test := !scalaVersion.value.contains("2.12") // Receiving a SIGKILL on Travis CI without this
   )
   .jsSettings(
     scalaJSStage in Global := FastOptStage
