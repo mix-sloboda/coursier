@@ -426,12 +426,15 @@ class Launcher(
 
   def registerSbtInterfaceComponents(sbtVersion: String): Unit = {
 
-    val (interfaceJar, compilerInterfaceSourcesJar) = sbtInterfaceComponentFiles(sbtVersion)
+    lazy val (interfaceJar, compilerInterfaceSourcesJar) = sbtInterfaceComponentFiles(sbtVersion)
+    lazy val compilerInterfaceSourceJar = sbtCompilerInterfaceSrcComponentFile(sbtVersion)
 
     if (componentProvider.component("xsbti").isEmpty)
       componentProvider.defineComponentNoCopy("xsbti", Array(interfaceJar))
     if (componentProvider.component("compiler-interface").isEmpty)
       componentProvider.defineComponentNoCopy("compiler-interface", Array(compilerInterfaceSourcesJar))
+    if (componentProvider.component("compiler-interface-src").isEmpty)
+      componentProvider.defineComponentNoCopy("compiler-interface-src", Array(compilerInterfaceSourceJar))
   }
 
   private def sbtInterfaceComponentFiles(sbtVersion: String): (File, File) = {
@@ -551,5 +554,84 @@ class Launcher(
     }
 
     (interfaceJar, compilerInterfaceSourcesJar)
+  }
+
+  private def sbtCompilerInterfaceSrcComponentFile(sbtVersion: String): File = {
+
+    val res = {
+
+      val initialRes = Resolution(
+        Set(
+          Dependency(Module("org.scala-sbt", "compiler-interface"), sbtVersion, transitive = false)
+        )
+      )
+
+      val logger =
+        Some(new TermDisplay(
+          new OutputStreamWriter(System.err)
+        ))
+
+      logger.foreach(_.init {
+        System.err.println(s"Resolving org.scala-sbt:compiler-interface:$sbtVersion")
+      })
+
+      val res = initialRes.process.run(fetch(logger)).unsafePerformSync
+
+      logger.foreach { l =>
+        if (l.stopDidPrintSomething())
+          System.err.println(s"Resolved org.scala-sbt:compiler-interface:$sbtVersion")
+      }
+
+      if (res.errors.nonEmpty) {
+        Console.err.println(s"Errors:\n${res.errors.map("  " + _).mkString("\n")}")
+        sys.exit(1)
+      }
+
+      if (res.conflicts.nonEmpty) {
+        Console.err.println(s"Conflicts:\n${res.conflicts.map("  " + _).mkString("\n")}")
+        sys.exit(1)
+      }
+
+      if (!res.isDone) {
+        Console.err.println("Did not converge")
+        sys.exit(1)
+      }
+
+      res
+    }
+
+    val files = {
+
+      val artifactLogger =
+        Some(new TermDisplay(
+          new OutputStreamWriter(System.err)
+        ))
+
+      artifactLogger.foreach(_.init {
+        System.err.println(s"Fetching org.scala-sbt:compiler-interface:$sbtVersion source artifacts")
+      })
+
+      val results = Task.gatherUnordered(tasks(res, artifactLogger)).unsafePerformSync
+
+      artifactLogger.foreach { l =>
+        if (l.stopDidPrintSomething())
+          System.err.println(s"Fetched org.scala-sbt:compiler-interface:$sbtVersion source artifacts")
+      }
+
+      val errors = results.collect { case (a, -\/(err)) => (a, err) }
+
+      if (errors.nonEmpty) {
+        Console.err.println(s"Error downloading artifacts:\n${errors.map("  " + _).mkString("\n")}")
+        sys.exit(1)
+      }
+
+      results.collect { case (a, \/-(f)) => f }
+    }
+
+    System.err.println(s"Found files $files")
+
+    files.find(f => f.getName == "compiler-interface-src.jar").getOrElse {
+      sys.error("compiler-interface-src not found")
+    }
   }
 }
