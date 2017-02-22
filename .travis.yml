@@ -35,9 +35,3 @@ env:
 branches:
   only:
   - master
-cache:
-  directories:
-  - $HOME/.m2
-  - $HOME/.ivy2/cache
-  - $HOME/.sbt
-  - $HOME/.coursier
