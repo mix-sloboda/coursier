@@ -6,7 +6,7 @@ set -ev
 # The tests here check that coursier is nonetheless fine when run under Java 6.
 
 if echo "$TRAVIS_SCALA_VERSION" | grep -q "^2\.11"; then
-  ~/sbt ++${TRAVIS_SCALA_VERSION} cli/pack
+  ./csbt ++${TRAVIS_SCALA_VERSION} cli/pack
   docker run -it --rm \
     -v $(pwd)/cli/target/pack:/opt/coursier \
     -e CI=true \
@@ -29,7 +29,7 @@ addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-SNAPSHOT")
 }
 
 if echo "$TRAVIS_SCALA_VERSION" | grep -q "^2\.10"; then
-  ~/sbt ++${TRAVIS_SCALA_VERSION} publishLocal
+  ./csbt ++${TRAVIS_SCALA_VERSION} publishLocal
   git clone https://github.com/alexarchambault/scalacheck-shapeless.git
   cd scalacheck-shapeless
   cd project
