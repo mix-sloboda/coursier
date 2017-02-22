@@ -26,6 +26,20 @@ final class ComponentProvider(cacheDir: File) extends xsbti.ComponentProvider {
     res
   }
 
+  private def clear(componentId: String): Unit = {
+
+    def deleteRecursively(f: File): Unit =
+      if (f.isFile)
+        f.delete()
+      else
+        Option(f.listFiles())
+          .getOrElse(Array())
+          .foreach(deleteRecursively)
+
+    val dir = componentLocation(componentId)
+    deleteRecursively(dir)
+  }
+
   private def copying(componentId: String, f: File): File = {
 
     // TODO Use some locking mechanisms here
@@ -41,6 +55,7 @@ final class ComponentProvider(cacheDir: File) extends xsbti.ComponentProvider {
     components0 += componentId -> components.distinct
   }
   def defineComponent(componentId: String, components: Array[File]): Unit = {
+    clear(componentId)
     components0 += componentId -> components.distinct.map(copying(componentId, _))
   }
   def addToComponent(componentId: String, components: Array[File]): Boolean = {
@@ -50,6 +65,6 @@ final class ComponentProvider(cacheDir: File) extends xsbti.ComponentProvider {
     newFiles.length != previousFiles.length
   }
 
-  def lockFile: File = null
+  def lockFile: File = new File("/component-lock")
 
 }
