@@ -426,13 +426,13 @@ class Launcher(
 
   def registerSbtInterfaceComponents(sbtVersion: String): Unit = {
 
-    lazy val (interfaceJar, compilerInterfaceSourcesJar) = sbtInterfaceComponentFiles(sbtVersion)
+    lazy val (interfaceJar, _) = sbtInterfaceComponentFiles(sbtVersion)
     lazy val compilerInterfaceSourceJar = sbtCompilerInterfaceSrcComponentFile(sbtVersion)
 
     if (componentProvider.component("xsbti").isEmpty)
       componentProvider.defineComponentNoCopy("xsbti", Array(interfaceJar))
     if (componentProvider.component("compiler-interface").isEmpty)
-      componentProvider.defineComponentNoCopy("compiler-interface", Array(compilerInterfaceSourcesJar))
+      componentProvider.defineComponentNoCopy("compiler-interface", Array(compilerInterfaceSourceJar))
     if (componentProvider.component("compiler-interface-src").isEmpty)
       componentProvider.defineComponentNoCopy("compiler-interface-src", Array(compilerInterfaceSourceJar))
   }

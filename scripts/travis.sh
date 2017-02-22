@@ -31,6 +31,7 @@ function isMasterOrDevelop() {
 
 scripts/generate-sbt-launcher.sh
 rm -rf project
+rm -rf ~/.sbt ~/.ivy2/cache
 
 # Required for ~/.ivy2/local repo tests
 ./csbt ++2.11.8 coreJVM/publishLocal http-server/publishLocal
