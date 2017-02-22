@@ -205,6 +205,8 @@ lazy val cli = project
       else
         Seq()
     },
+    resolvers += Resolver.bintrayRepo("tek", "maven"),
+    addCompilerPlugin("tryp" %% "splain" % "0.1.20"),
     packExcludeArtifactTypes += "pom",
     resourceGenerators in Compile += packageBin.in(bootstrap).in(Compile).map { jar =>
       Seq(jar)
