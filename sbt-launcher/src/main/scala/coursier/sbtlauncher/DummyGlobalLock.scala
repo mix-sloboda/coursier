@@ -11,7 +11,7 @@ case object DummyGlobalLock extends xsbti.GlobalLock {
     Option(lockFile) match {
       case None => run.call()
       case Some(lockFile0) =>
-        Console.err.println(s"** Asked a lock on $lockFile **")
+        Console.err.println(s"** Asked a lock on $lockFile **\n${Thread.currentThread().getStackTrace.map("  " + _).mkString("\n")}")
 
         val lock0 = new AnyRef
         val lock = Option(locks.putIfAbsent(lockFile0, lock0)).getOrElse(lock0)
