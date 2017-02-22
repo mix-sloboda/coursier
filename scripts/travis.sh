@@ -48,7 +48,7 @@ rm -rf ~/.sbt ~/.ivy2/cache
 
 # TODO Add coverage once https://github.com/scoverage/sbt-scoverage/issues/111 is fixed
 
-SBT_COMMANDS="compile test it:test"
+SBT_COMMANDS="compile test:compile test it:test"
 
 RUN_SHADING_TESTS=1
 
