@@ -628,8 +628,6 @@ class Launcher(
       results.collect { case (a, \/-(f)) => f }
     }
 
-    System.err.println(s"Found files $files")
-
     files.find(f => f.getName == "compiler-interface-src.jar").getOrElse {
       sys.error("compiler-interface-src not found")
     }
