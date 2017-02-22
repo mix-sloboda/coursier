@@ -56,7 +56,8 @@ final case class MainApp(
   val launcher = new Launcher(
     scalaVer0,
     // FIXME Add org & moduleName in this path
-    new File(s"${sys.props("user.home")}/.coursier/sbt/components_scala$scalaVer0${if (sbtVersion0.isEmpty) "" else "_sbt" + sbtVersion0}")
+    new File(s"${sys.props("user.dir")}/target/sbt-components/components_scala$scalaVer0${if (sbtVersion0.isEmpty) "" else "_sbt" + sbtVersion0}"),
+    new File(s"${sys.props("user.dir")}/target/ivy2")
   )
 
   launcher.registerScalaComponents()

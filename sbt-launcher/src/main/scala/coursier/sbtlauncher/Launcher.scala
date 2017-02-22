@@ -15,7 +15,8 @@ import scalaz.concurrent.Task
 
 class Launcher(
   scalaVersion: String,
-  componentsCache: File
+  componentsCache: File,
+  val ivyHome: File
 ) extends xsbti.Launcher {
 
   val componentProvider = new ComponentProvider(componentsCache)
@@ -98,8 +99,6 @@ class Launcher(
 
   def isOverrideRepositories = false // ???
 
-  def ivyHome: File =
-    new File(sys.props("user.home") + "/.ivy2")
   def bootDirectory: File = ???
 
   def getScala(version: String): xsbti.ScalaProvider =
