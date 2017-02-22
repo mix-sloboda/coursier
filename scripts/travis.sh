@@ -81,6 +81,7 @@ fi
 
 SBT_COMMANDS="$SBT_COMMANDS tut coreJVM/mimaReportBinaryIssues cache/mimaReportBinaryIssues"
 
+./csbt ++${TRAVIS_SCALA_VERSION} compile || true # Ok, this is weird, type class derivation in cli fails on first attempt, not on the second one
 ./csbt ++${TRAVIS_SCALA_VERSION} $SBT_COMMANDS
 
 scripts/java-6-test.sh
