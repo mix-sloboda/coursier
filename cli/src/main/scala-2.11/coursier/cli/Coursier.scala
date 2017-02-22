@@ -1,5 +1,4 @@
-package coursier
-package cli
+package coursier.cli
 
 import caseapp._
 import caseapp.core.{ ArgsApp, CommandsMessages }
