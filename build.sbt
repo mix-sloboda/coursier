@@ -191,24 +191,32 @@ lazy val bootstrap = project
     autoScalaLibrary := false
   )
 
-lazy val cli = project
+lazy val `cli-commands` = project
   .dependsOn(coreJvm, cache)
   .settings(commonSettings)
   .settings(noPublishForScalaVersionSettings("2.10", "2.12"))
-  .settings(packAutoSettings)
-  .settings(proguardSettings)
   .settings(
-    name := "coursier-cli",
+    name := "coursier-cli-commands",
     libraryDependencies ++= {
       if (scalaBinaryVersion.value == "2.11")
         Seq("com.github.alexarchambault" %% "case-app" % "1.1.3")
       else
         Seq()
     },
-    packExcludeArtifactTypes += "pom",
     resourceGenerators in Compile += packageBin.in(bootstrap).in(Compile).map { jar =>
       Seq(jar)
-    }.taskValue,
+    }.taskValue
+  )
+
+lazy val cli = project
+  .dependsOn(`cli-commands`)
+  .settings(commonSettings)
+  .settings(noPublishForScalaVersionSettings("2.10", "2.12"))
+  .settings(packAutoSettings)
+  .settings(proguardSettings)
+  .settings(
+    name := "coursier-cli",
+    packExcludeArtifactTypes += "pom",
     ProguardKeys.proguardVersion in Proguard := "5.3",
     ProguardKeys.options in Proguard ++= Seq(
       "-dontwarn",
@@ -436,6 +444,7 @@ lazy val `coursier` = project.in(file("."))
     cache,
     bootstrap,
     cli,
+    `cli-commands`,
     `sbt-coursier`,
     `sbt-shading`,
     `sbt-launcher`,
